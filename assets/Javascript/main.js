@@ -139,7 +139,6 @@ const app = {
             iterations: Infinity,
         });
         cdThumbAnimate.pause();
-
         // Xử lý phóng to / thu nhỏ CD
         document.onscroll = function () {
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -181,10 +180,14 @@ const app = {
             }
         }
 
-        // Xử lí khi tua song 
-        progress.onchange = function (e) {
-            const seekTime = e.target.value * audio.duration / 100;
-            audio.currentTime = seekTime;
+        // Xử lí khi tua song
+        // cách 1: dùng onchange nhưng bị bug click nhanh quá ko tua đc song 
+        // progress.onchange = function (e) {
+        //     audio.currentTime =  e.target.value * audio.duration / 100;
+        // }
+        // cách 2: ưu tiên dùng. vì nó ko bị bug giống onchange
+        progress.oninput = function (e) {
+            audio.currentTime =  e.target.value * audio.duration / 100;
         }
 
         // Khi prev song
@@ -258,8 +261,8 @@ const app = {
     scrollToCurrentSong: function() {
         setTimeout(() => {
             $('.song.active').scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest',
+                behavior: 'auto',
+                block: 'center',
             })
         }, 300);
     },
@@ -287,6 +290,7 @@ const app = {
         this.currentIndex++;
         if (this.currentIndex >= this.songs.length) {
             this.currentIndex = 0;
+
         }
         this.loadCurrentSong();
     },
